@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LNBT.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -70,6 +71,12 @@ namespace LNBT
         private void tabTaiKhoan_Click(object sender, EventArgs e)
         {
 
+        } 
+
+        private void btnXemTaiKhoan_Click(object sender, EventArgs e)
+        {
+            Model1 db = new Model1();
+            dtgvTaiKhoan.DataSource = db.TKNhanViens.ToList();
         }
     }
 }
