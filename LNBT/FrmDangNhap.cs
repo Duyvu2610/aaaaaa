@@ -27,7 +27,7 @@ namespace LNBT
             string  username = txtTenDangNhap.Text;
             string  password = txtMatKhau.Text;
 
-            if (username == "admin" && password == "123456")
+            if (username == "admin" && password == "1")
             {
                 var frmMain = new FrmMain();
                 frmMain.ShowDialog();
