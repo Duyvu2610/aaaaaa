@@ -99,6 +99,8 @@
             this.dtgvDoanhThu = new System.Windows.Forms.DataGridView();
             this.dtpkTuNgay = new System.Windows.Forms.DateTimePicker();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.totalPage = new System.Windows.Forms.NumericUpDown();
+            this.page = new System.Windows.Forms.NumericUpDown();
             this.tabAdmin = new System.Windows.Forms.TabControl();
             this.tabTaiKhoan.SuspendLayout();
             this.panel19.SuspendLayout();
@@ -128,6 +130,9 @@
             this.tabDoanhThu.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtgvDoanhThu)).BeginInit();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.totalPage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.page)).BeginInit();
             this.tabAdmin.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -852,6 +857,7 @@
             this.btnQuayLai.TabIndex = 7;
             this.btnQuayLai.Text = "Quay Lại";
             this.btnQuayLai.UseVisualStyleBackColor = true;
+            this.btnQuayLai.Click += new System.EventHandler(this.btnPrevPage_Click);
             // 
             // btnQuaTrang
             // 
@@ -862,6 +868,7 @@
             this.btnQuaTrang.TabIndex = 6;
             this.btnQuaTrang.Text = "Qua Trang";
             this.btnQuaTrang.UseVisualStyleBackColor = true;
+            this.btnQuaTrang.Click += new System.EventHandler(this.btnNextPage_Click);
             // 
             // btnCuoi
             // 
@@ -872,6 +879,7 @@
             this.btnCuoi.TabIndex = 5;
             this.btnCuoi.Text = "Cuối";
             this.btnCuoi.UseVisualStyleBackColor = true;
+            this.btnCuoi.Click += new System.EventHandler(this.btnLastPage_Click);
             // 
             // btnDau
             // 
@@ -882,6 +890,7 @@
             this.btnDau.TabIndex = 4;
             this.btnDau.Text = "Đầu";
             this.btnDau.UseVisualStyleBackColor = true;
+            this.btnDau.Click += new System.EventHandler(this.btnFirstPage_Click);
             // 
             // btnThongKe
             // 
@@ -892,6 +901,7 @@
             this.btnThongKe.TabIndex = 1;
             this.btnThongKe.Text = "Thống Kê";
             this.btnThongKe.UseVisualStyleBackColor = true;
+            this.btnThongKe.Click += new System.EventHandler(this.GetProductRevenue);
             // 
             // dtpkDenNgay
             // 
@@ -933,12 +943,30 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.totalPage);
+            this.panel2.Controls.Add(this.page);
             this.panel2.Location = new System.Drawing.Point(11, 7);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1248, 53);
             this.panel2.TabIndex = 3;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
+            // 
+            // totalPage
+            // 
+            this.totalPage.Location = new System.Drawing.Point(738, 29);
+            this.totalPage.Name = "totalPage";
+            this.totalPage.Size = new System.Drawing.Size(120, 22);
+            this.totalPage.TabIndex = 1;
+            this.totalPage.Visible = false;
+            // 
+            // page
+            // 
+            this.page.Location = new System.Drawing.Point(467, 14);
+            this.page.Name = "page";
+            this.page.Size = new System.Drawing.Size(120, 22);
+            this.page.TabIndex = 0;
+            this.page.Visible = false;
             // 
             // tabAdmin
             // 
@@ -1005,6 +1033,9 @@
             this.tabDoanhThu.PerformLayout();
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dtgvDoanhThu)).EndInit();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.totalPage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.page)).EndInit();
             this.tabAdmin.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -1084,5 +1115,7 @@
         private System.Windows.Forms.Panel panel20;
         private System.Windows.Forms.Label lblTrangThai;
         private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.NumericUpDown totalPage;
+        private System.Windows.Forms.NumericUpDown page;
     }
 }

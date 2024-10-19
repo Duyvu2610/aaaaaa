@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace LNBT
 {
@@ -16,11 +17,101 @@ namespace LNBT
         public FrmAdmin()
         {
             InitializeComponent();
+            dtpkTuNgay.Value = DateTime.Now.AddDays(-1);
         }
 
         private void lblMaDoUong_Click(object sender, EventArgs e)
         {
             
+        }
+        private void setPageText(object sender, EventArgs e)
+        {
+            txtSoTrang.Text = String.Format("{0}/{1}", totalPage.Value > 0 ? page.Value + 1 : page.Value, totalPage.Value);
+        }
+        private void btnNextPage_Click(object sender, EventArgs e)
+        {
+            if ((int)page.Value < totalPage.Value - 1)
+            {
+                page.Value++;
+            }
+        }
+
+        private void btnPrevPage_Click(object sender, EventArgs e)
+        {
+            if ((int)page.Value > 1)
+            {
+                page.Value--;
+            }
+        }
+
+        private void btnFirstPage_Click(object sender, EventArgs e)
+        {
+            page.Value = 0;
+        }
+
+        private void btnLastPage_Click(object sender, EventArgs e)
+        {
+            page.Value = totalPage.Value - 1;
+        }
+
+
+        private void changePage(int page)
+        {
+            this.page.Value = page;
+        }
+
+        private void GetProductRevenue(object sender, EventArgs e)
+        {
+            int pageNumber = (int)page.Value;
+            int pageSize = 10;
+
+            DateTime startDate = dtpkTuNgay.Value;
+            DateTime endDate = dtpkDenNgay.Value;
+
+            if (startDate > endDate)
+            {
+                MessageBox.Show("Start date cannot be greater than end date.");
+                return;
+            }
+
+            using (Model1 db = new Model1())
+            {
+
+                var productRevenue = db.ChiTietDonHangs
+                    .Join(db.SanPhams, ctdh => ctdh.MaSanPham, sp => sp.MaSanPham, (ctdh, sp) => new { ctdh, sp })
+                    .Join(db.DonHangs, combined => combined.ctdh.MaDonHang, dh => dh.MaDonHang, (combined, dh) => new { combined.ctdh, combined.sp, dh })
+                    .Where(order => order.dh.NgayDatHang >= startDate && order.dh.NgayDatHang <= endDate && order.dh.TrangThaiDonHang == "Hoàn thành")
+                    .GroupBy(item => new { item.sp.MaSanPham, item.sp.TenSanPham })
+                    .Select(group => new
+                    {
+                        ProductName = group.Key.TenSanPham,
+                        TotalRevenue = group.Sum(item => item.ctdh.ThanhTien),
+                        TotalUnitsSold = group.Sum(item => item.ctdh.SoLuong),
+                        FirstOrderDate = group.Min(item => item.dh.NgayDatHang),
+                        LastOrderDate = group.Max(item => item.dh.NgayDatHang)
+                    })
+                    .OrderByDescending(result => result.TotalRevenue)
+                    .Skip(pageNumber * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                if (productRevenue.Count > 0)
+                {
+                    dtgvDoanhThu.DataSource = productRevenue;
+                }
+                else
+                {
+                    MessageBox.Show("No products found in the given date range.");
+                    dtgvDoanhThu.DataSource = null;
+
+                }
+                totalPage.Value = productRevenue.Count;
+
+                setPageText(sender, e);
+
+
+
+            }
         }
 
 
