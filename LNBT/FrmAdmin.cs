@@ -1,14 +1,11 @@
 ﻿using LNBT.Model;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Entity;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using LNBT.Dto;
 
 namespace LNBT
 {
@@ -106,6 +103,7 @@ namespace LNBT
 
                 }
                 totalPage.Value = productRevenue.Count;
+                label3.Text = productRevenue.Sum(p => p.TotalRevenue).ToString() + " VND";
 
                 setPageText(sender, e);
 
@@ -117,90 +115,81 @@ namespace LNBT
 
         private void delete_product(object sender, EventArgs e)
         {
-            string product_id = txtMaDoUong.Text;
-
-            if (string.IsNullOrEmpty(product_id))
+            Model1 db = new Model1();
+            foreach(DataGridViewRow row in dtgvDoUong.SelectedRows)
             {
-                MessageBox.Show("Please enter a product ID.");
-                return;
-            }
-
-            if (!int.TryParse(product_id, out int productId))
-            {
-                MessageBox.Show("Invalid product ID. Please enter a valid number.");
-                return;
-            }
-
-            using (Model1 db = new Model1())
-            {
-                var relatedOrders = db.ChiTietDonHangs.Where(od => od.MaSanPham == productId).ToList();
-                if (relatedOrders.Count > 0)
+                int product_id = Convert.ToInt32(row.Cells[0].Value);
+                SanPham product = db.SanPhams.FirstOrDefault(p => p.MaSanPham == product_id);
+                if (product != null)
                 {
-                    db.ChiTietDonHangs.RemoveRange(relatedOrders);
+                    db.SanPhams.Remove(product);
                 }
-
-                var productToDelete = db.SanPhams.FirstOrDefault(p => p.MaSanPham == productId);
-                if (productToDelete != null)
-                {
-                    db.SanPhams.Remove(productToDelete);
-                    db.SaveChanges();
-
-                    MessageBox.Show("Product and related order details deleted successfully.");
-                    dtgvDoUong.DataSource = db.SanPhams.ToList();
-                }
-                else
-                {
-                    MessageBox.Show("No product found with the entered ID.");
-                }
+                db.SaveChanges();
             }
+            MessageBox.Show("Product deleted successfully.");
+            dtgvDoUong.DataSource = db.SanPhams.ToList();
         }
 
 
 
         private void find_product(object sender, EventArgs e)
         {
-            string product_id = txtTim.Text;
+            Model1 db = new Model1();
+            string productName = txtTim.Text;
 
-            if (string.IsNullOrEmpty(product_id))
+            if (string.IsNullOrEmpty(productName))
             {
-                MessageBox.Show("Please enter a product ID.");
+                MessageBox.Show("Vui lòng nhập tên sản phẩm");
                 return;
             } 
-            
-                int productId;
-                if (!int.TryParse(product_id, out productId))
-                {
-                    MessageBox.Show("Invalid product ID. Please enter a valid number.");
-                    return;
-                }
 
-                Model1 db = new Model1();
-                var products = db.SanPhams
-                             .Where(p => p.MaSanPham == productId)
-                             .ToList();
+            List<SanPham> ListProduct = db.SanPhams.Where(p => p.TenSanPham.Contains(productName)).ToList();
 
-                if (products.Count >0)
-                {
-                    txtMaDoUong.Text = products.First().MaSanPham.ToString();
-                    textBox1.Text = products.First().TenSanPham;
-                    nmGia.Value = products.First().Gia;
-                }
-                else
-                {
-                    MessageBox.Show("No product found with the entered ID.");
-                }
-            
+            dtgvDoUong.DataSource = ListProduct;
+        }
 
+        private int convertFromTenDanhMucToId(string tenDanhMuc)
+        {
+            using (Model1 db = new Model1())
+            {
+                DanhMuc danhMuc = db.DanhMucs.FirstOrDefault(d => d.TenDanhMuc == tenDanhMuc);
+                if (danhMuc != null)
+                {
+                    return danhMuc.Id;
+                }
+                return -1;
+            }
         }
 
         private void add_product(object sender, EventArgs e)
         {
-            string product_name = textBox1.Text;
+            string product_name = txtTenMon.Text;
+            string ProductDescription = txtMoTa.Text;
+            int ProductCategory = convertFromTenDanhMucToId(cbLoai.Text);
             decimal price = nmGia.Value;
+            string ProductStatus = txtTrangThai.Text;
 
             if (string.IsNullOrEmpty(product_name))
             {
                 MessageBox.Show("Please enter a product name.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(ProductDescription))
+            {
+                MessageBox.Show("Please enter a product description.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(ProductStatus))
+            {
+                MessageBox.Show("Please enter a product status.");
+                return;
+            }
+
+            if (price <= 0)
+            {
+                MessageBox.Show("Please enter a valid price.");
                 return;
             }
 
@@ -209,7 +198,11 @@ namespace LNBT
                 var newProduct = new SanPham
                 {
                     TenSanPham = product_name,
-                    Gia = price
+                    MoTa = ProductDescription,
+                    LoaiSanPham = ProductCategory,
+                    Gia = price,
+                    TrangThai = ProductStatus,
+                    KhuyenMai = 0
                 };
 
                 db.SanPhams.Add(newProduct);
@@ -217,60 +210,72 @@ namespace LNBT
 
                 MessageBox.Show("Product added successfully.");
 
-                 dtgvDoUong.DataSource = db.SanPhams.ToList();
+                view_all_product(sender, e);
             }
         }
 
-
         private void view_all_product(object sender, EventArgs e)
         {
-            Model1 db = new Model1();
-            dtgvDoUong.DataSource = db.SanPhams.ToList();
+            using (Model1 db = new Model1())
+            {
+                List<ProductDTO> products = db.SanPhams
+                    .Include(sp => sp.DanhMuc)
+                    .Select(sp => new ProductDTO
+                    {
+                        MaSanPham = sp.MaSanPham,
+                        TenSanPham = sp.TenSanPham,
+                        Gia = sp.Gia,
+                        TenDanhMuc = sp.DanhMuc.TenDanhMuc,
+                        MoTa = sp.MoTa,
+                        TrangThai = sp.TrangThai,
+                        KhuyenMai = sp.KhuyenMai
+                    })
+                    .ToList();
+
+                dtgvDoUong.DataSource = products;
+                dtgvDoUong.Columns["MaSanPham"].DataPropertyName = "MaSanPham";
+                dtgvDoUong.Columns["TenSanPham"].DataPropertyName = "TenSanPham";
+                dtgvDoUong.Columns["Gia"].DataPropertyName = "Gia";
+                dtgvDoUong.Columns["TenDanhMuc"].DataPropertyName = "TenDanhMuc"; 
+                dtgvDoUong.Columns["MoTa"].DataPropertyName = "MoTa";
+                dtgvDoUong.Columns["TrangThai"].DataPropertyName = "TrangThai";
+                dtgvDoUong.Columns["KhuyenMai"].DataPropertyName = "KhuyenMai";
+            }
         }
 
         private void update_product(object sender, EventArgs e)
         {
-            string product_id = txtMaDoUong.Text;
-
-            if (string.IsNullOrEmpty(product_id))
+            if (dtgvDoUong.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please enter a product ID.");
+                MessageBox.Show("Please select a product to update.");
                 return;
             }
-
-            if (!int.TryParse(product_id, out int productId))
-            {
-                MessageBox.Show("Invalid product ID. Please enter a valid number.");
-                return;
-            }
-
-            string product_name = textBox1.Text;
-            decimal price = nmGia.Value;
-
-            if (string.IsNullOrEmpty(product_name))
-            {
-                MessageBox.Show("Please enter a product name.");
-                return;
-            }
-
-            using (Model1 db = new Model1())
-            {
-                var productToUpdate = db.SanPhams.FirstOrDefault(p => p.MaSanPham == productId);
-
-                if (productToUpdate != null)
+            using (Model1 db = new Model1()) { 
+                foreach (DataGridViewRow row in dtgvDoUong.SelectedRows)
                 {
-                    productToUpdate.TenSanPham = product_name;
-                    productToUpdate.Gia = price;
-
+                    int product_id = Convert.ToInt32(row.Cells[0].Value);
+                    int LoaiSanPham = convertFromTenDanhMucToId(row.Cells[3].Value.ToString());
+                    SanPham product = db.SanPhams.FirstOrDefault(p => p.MaSanPham == product_id);
+                    bool isHasLoaiSanPham = convertFromTenDanhMucToId(cbLoai.Text) != -1;
+                    if (!isHasLoaiSanPham)
+                    {
+                        MessageBox.Show("Loại sản phẩm không tồn tại.");
+                        dtgvDoUong.DataSource = db.SanPhams.ToList();
+                        return;
+                    }
+                    if (product != null)
+                    {
+                        product.TenSanPham = row.Cells[1].Value.ToString();
+                        product.Gia = Convert.ToDecimal(row.Cells[2].Value);
+                        product.LoaiSanPham = LoaiSanPham;
+                        product.MoTa = row.Cells[4].Value.ToString();
+                        product.TrangThai = row.Cells[5].Value.ToString();
+                        product.KhuyenMai = Convert.ToDecimal(row.Cells[6].Value);
+                    }
                     db.SaveChanges();
-
-                    MessageBox.Show("Product updated successfully.");
-                    dtgvDoUong.DataSource = db.SanPhams.ToList();
                 }
-                else
-                {
-                    MessageBox.Show("No product found with the entered ID.");
-                }
+            MessageBox.Show("Product updated successfully.");
+            view_all_product(sender, e);
             }
         }
 
@@ -283,6 +288,17 @@ namespace LNBT
         private void tabDoanhThu_Click(object sender, EventArgs e)
         {
             
+        }
+
+        private void tabDoUong_Click(object sender, EventArgs e)
+        {
+            using (Model1 db = new Model1())
+            {
+                List<string> danhMucNames = db.DanhMucs.Select(d => d.TenDanhMuc).ToList();
+
+                cbLoai.DataSource = danhMucNames;
+                view_all_product(sender, e);
+            }
         }
 
         private void panel2_Paint(object sender, PaintEventArgs e)
@@ -323,6 +339,254 @@ namespace LNBT
         private void tabTaiKhoan_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnThemTaiKhoan_Click(object sender, EventArgs e)
+        {
+            string username = txtTenTk.Text;
+            string password = txtMatKhau.Text;
+            string role = cbRole.Text;
+            string fullname = txtFullName.Text;
+            string email = txtEmail.Text;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                MessageBox.Show("Vui lòng nhập tên tài khoản");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Vui lòng nhập password");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(role))
+            {
+                MessageBox.Show("Vui lòng chọn Role");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(fullname))
+            {
+                MessageBox.Show("Vui lòng nhập họ và tên");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(email))
+            {
+                MessageBox.Show("Vui lòng nhập email");
+                return;
+            }
+
+
+            using (Model1 db = new Model1())
+            {
+
+                TKNhanVien tKNhanVien = new TKNhanVien
+                {
+                    Username = username,
+                    PasswordHash = password,
+                    Role = role,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                NhanVien nhanVien = new NhanVien
+                {
+                    TenNhanVien = fullname,
+                    MaNhanVien = tKNhanVien.EmployeeID,
+                    VaiTro = role,
+                };
+
+                bool userNameExists = db.TKNhanViens.Any(u => u.Username == tKNhanVien.Username);
+                if (userNameExists)
+                {
+                    MessageBox.Show("Tên tài khoản đã tồn tại.");
+                    return;
+                }
+
+                db.TKNhanViens.Add(tKNhanVien);
+                db.NhanViens.Add(nhanVien);
+                db.SaveChanges();
+
+                MessageBox.Show("Tài khoản đã được thêm thành công.");
+
+                dtgvTaiKhoan.DataSource = db.TKNhanViens.ToList();
+            }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnXemTaiKhoan_Click(object sender, EventArgs e)
+        {
+            using (Model1 db = new Model1())
+            {
+                dtgvTaiKhoan.DataSource = db.TKNhanViens.ToList();
+            }
+        }
+
+        private void btnXoaTaiKhoan_Click(object sender, EventArgs e)
+        {
+            if (dtgvTaiKhoan.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn tài khoản để xóa.");
+                return;
+            }
+            using (Model1 db = new Model1())
+            {
+                List<TKNhanVien> usersToRemove = new List<TKNhanVien>();
+                foreach (DataGridViewRow row in dtgvTaiKhoan.SelectedRows)
+                {
+                    int user_id = Convert.ToInt32(row.Cells[0].Value);
+                    TKNhanVien tkNhanvien = db.TKNhanViens.FirstOrDefault(u => u.EmployeeID == user_id);
+                    if (tkNhanvien != null)
+                    {
+                        usersToRemove.Add(tkNhanvien);
+                    }
+                }
+
+                if (usersToRemove.Count > 0)
+                {
+                    db.TKNhanViens.RemoveRange(usersToRemove);
+                    db.SaveChanges();
+                    MessageBox.Show("Tài khoản đã được xóa thành công.");
+                }
+                else
+                {
+                    MessageBox.Show("Không có tài khoản nào được chọn để xóa.");
+                }
+
+                // Update the data grid view
+                dtgvTaiKhoan.DataSource = db.TKNhanViens.ToList();
+            }
+        }
+
+        private void btnSuaTaiKhoan_Click(object sender, EventArgs e)
+        {
+            if (dtgvTaiKhoan.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn tài khoản để cập nhật.");
+                return;
+            }
+            using (Model1 db = new Model1())
+            {
+                foreach (DataGridViewRow row in dtgvTaiKhoan.SelectedRows)
+                {
+                    int UserId = Convert.ToInt32(row.Cells[0].Value);
+
+                    // Select the user from the database
+                    TKNhanVien user = db.TKNhanViens.FirstOrDefault(u => u.EmployeeID == UserId);
+
+                    if (user == null)
+                    {
+                        MessageBox.Show($"Không tìm thấy người dùng với UserId: {UserId}");
+                        return;
+                    }
+
+                    // Update the user's information
+                    user.Username = row.Cells[1].Value.ToString();
+                    user.PasswordHash = row.Cells[2].Value.ToString();
+                    user.Role = row.Cells[3].Value.ToString();
+
+                    // Save the changes to the database
+                    db.SaveChanges();
+                }
+                MessageBox.Show("Tài khoản đã được cập nhật thành công.");
+
+                // Update the data grid view
+                dtgvTaiKhoan.DataSource = db.TKNhanViens.ToList();
+            }
+        }
+
+        private void btnXemDanhMuc_Click(object sender, EventArgs e)
+        {
+            using(Model1 db = new Model1())
+            {
+                dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
+                dtgvDanhMuc.Columns["SanPhams"].Visible = false;
+            }
+        }
+
+        private void btnThemDanhMuc_Click(object sender, EventArgs e)
+        {
+            
+            string name = txtTenDanhMuc.Text;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                MessageBox.Show("Vui lòng nhập tên danh mục.");
+                return;
+            }
+
+            using (Model1 db = new Model1()) 
+            {
+                DanhMuc newCategory = new DanhMuc
+                {
+                    TenDanhMuc = name
+                };
+
+                db.DanhMucs.Add(newCategory);
+                db.SaveChanges();
+
+                MessageBox.Show("Danh mục đã được thêm thành công.");
+
+                dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
+            }
+        }
+
+        private void btnXoaDanhMuc_Click(object sender, EventArgs e)
+        {
+            if (dtgvDanhMuc.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn danh mục để xóa.");
+                return;
+            }
+            using (Model1 db = new Model1())
+            {
+                foreach (DataGridViewRow row in dtgvDanhMuc.SelectedRows)
+                {
+                    int categoryId = Convert.ToInt32(row.Cells[0].Value);
+                    DanhMuc category = db.DanhMucs.FirstOrDefault(d => d.Id == categoryId);
+                    if (category == null)
+                    {
+                        MessageBox.Show($"Không tìm thấy danh mục với Id: {categoryId}");
+                        return;
+                    }
+                    db.DanhMucs.Remove(category);
+                }
+                db.SaveChanges();
+                dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
+                MessageBox.Show("Danh mục đã được xóa thành công.");
+            }
+        }
+
+        private void btnSuaDanhMuc_Click(object sender, EventArgs e)
+        {
+            if (dtgvDanhMuc.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn danh mục để cập nhật.");
+                return;
+            }
+            using (Model1 db = new Model1())
+            {
+                foreach (DataGridViewRow row in dtgvDanhMuc.SelectedRows)
+                {
+                    int categoryId = Convert.ToInt32(row.Cells[0].Value);
+                    DanhMuc category = db.DanhMucs.FirstOrDefault(d => d.Id == categoryId);
+                    if (category == null)
+                    {
+                        MessageBox.Show($"Không tìm thấy danh mục với Id: {categoryId}");
+                        return;
+                    }
+                    category.TenDanhMuc = row.Cells[1].Value.ToString();
+                }
+                db.SaveChanges();
+                MessageBox.Show("Danh mục đã được cập nhật thành công.");
+            }
         }
     }
 }

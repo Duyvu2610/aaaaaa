@@ -1,20 +1,18 @@
-﻿using System;
+﻿using LNBT.Model;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LNBT
 {
     public partial class FrmMain : Form
     {
-        public FrmMain()
+        private TKNhanVien _tKNhanVien;
+        public FrmMain(TKNhanVien tKNhanVien)
         {
             InitializeComponent();
+            _tKNhanVien = tKNhanVien;
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -27,7 +25,7 @@ namespace LNBT
             FrmDangNhap FrmDangNhap = new FrmDangNhap();
             FrmDangNhap.Show();
             this.Close();
-            
+
         }
 
         private void xemDoanhThuToolStripMenuItem_Click(object sender, EventArgs e)
@@ -42,19 +40,172 @@ namespace LNBT
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-
+            List<string> types = selectTypeProduct();
+            cbLoaiDoUong.DataSource = types;
+            List<string> products = getProductByType();
+            cbDoUong.DataSource = products;
         }
 
         private void ThongTinCaNhanToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FrmThongTinCaNhan f = new FrmThongTinCaNhan();
+            FrmThongTinCaNhan f = new FrmThongTinCaNhan(_tKNhanVien);
             f.ShowDialog();
         }
 
         private void adminToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (_tKNhanVien.Role != "Admin")
+            {
+                MessageBox.Show("Bạn không có quyền truy cập.");
+                return;
+            }
             FrmAdmin f = new FrmAdmin();
             f.ShowDialog();
+        }
+
+        private void cbLoaiDoUong_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            List<string> products = getProductByType();
+            cbDoUong.DataSource = products;
+
+        }
+
+        private void cbDoUong_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private List<string> getProductByType()
+        {
+            using (Model1 db = new Model1())
+            {
+                List<string> list = new List<string>();
+                string type = cbLoaiDoUong.Text;
+                foreach (SanPham item in db.SanPhams)
+                {
+                    if (item.DanhMuc.TenDanhMuc == type)
+                    {
+                        list.Add(item.TenSanPham);
+                    }
+                }
+                return list;
+            }
+        }
+
+        private List<string> selectTypeProduct()
+        {
+            using(Model1 model1 = new Model1())
+            {
+                List<string> list = new List<string>();
+                foreach (var item in model1.DanhMucs)
+                {
+                    list.Add(item.TenDanhMuc);
+                }
+                return list;
+            }
+        }
+
+        private void btnThemMon_Click(object sender, EventArgs e)
+        {
+            using(Model1 db = new Model1())
+            {
+                string productName = cbDoUong.Text;
+                int quantity = (int)nmSoLuongMon.Value;
+                var product = db.SanPhams.FirstOrDefault(p => p.TenSanPham == productName);
+                if (product == null)
+                {
+                    MessageBox.Show("Product not found.");
+                    return;
+                }
+
+                ListViewItem item = new ListViewItem(productName);
+                item.SubItems.Add(quantity.ToString());
+                item.SubItems.Add(product.Gia.ToString());
+                item.SubItems.Add((product.Gia * quantity).ToString());
+                listView1.Items.Add(item);
+                decimal total = 0;
+                foreach (ListViewItem i in listView1.Items)
+                {
+                    total += decimal.Parse(i.SubItems[3].Text);
+                }
+                txbThanhTien.Text = total.ToString();
+            }
+        }
+
+        private void nmSoLuongMon_ValueChanged(object sender, EventArgs e)
+        {
+            if (nmSoLuongMon.Value < 1)
+            {
+                nmSoLuongMon.Value = 1;
+            }
+        }
+
+        private void btnXoaMon_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn một món để xóa.");
+                return;
+            }
+
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                listView1.Items.Remove(item);
+            }
+
+            decimal total = 0;
+            foreach (ListViewItem i in listView1.Items)
+            {
+                total += decimal.Parse(i.SubItems[3].Text);
+            }
+
+            txbThanhTien.Text = total.ToString();
+        }
+
+        private void btnThanhToan_Click(object sender, EventArgs e)
+        {
+            using (Model1 db = new Model1())
+            {
+
+                foreach (ListViewItem item in listView1.Items)
+                {
+                    string productName = item.SubItems[0].Text;
+                    int quantity = int.Parse(item.SubItems[1].Text);
+                    SanPham product = db.SanPhams.FirstOrDefault(p => p.TenSanPham == productName);
+                    if (product == null)
+                    {
+                        MessageBox.Show("Product not found.");
+                        return;
+                    }
+
+                    DonHang donHang = new DonHang()
+                    {
+                        MaKhachHang = 1,
+                        MaNhanVien = _tKNhanVien.EmployeeID,
+                        NgayDatHang = DateTime.Now,
+                        TongTien = product.Gia * quantity,
+                        TrangThaiDonHang = "Hoàn thành"
+                    };
+
+                    db.DonHangs.Add(donHang);
+
+                    ChiTietDonHang chiTietDonHang = new ChiTietDonHang()
+                    {
+                        MaDonHang = donHang.MaDonHang,
+                        MaSanPham = product.MaSanPham,
+                        SoLuong = quantity,
+                        Gia = product.Gia,
+                        ThanhTien = product.Gia * quantity
+                    };
+
+                    db.ChiTietDonHangs.Add(chiTietDonHang);
+                    db.SaveChanges();
+                }
+
+                MessageBox.Show("Thanh toán thành công.");
+                listView1.Items.Clear();
+                txbThanhTien.Text = "0";
+            }
         }
     }
 }
