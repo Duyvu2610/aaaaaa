@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using LNBT.Model;
+using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -22,20 +18,34 @@ namespace LNBT
 
         }
 
-        private void btnDangNhap_Click(object sender, EventArgs e)
+        private async void btnDangNhap_Click(object sender, EventArgs e)
         {
-            string  username = txtTenDangNhap.Text;
-            string  password = txtMatKhau.Text;
+            using (Loading loading = new Loading())
+            {
+                loading.Show();
+                string username = txtTenDangNhap.Text;
+                string password = txtMatKhau.Text;
 
-            if (username == "admin" && password == "1")
-            {
-                var frmMain = new FrmMain();
-                frmMain.ShowDialog();
-                this.Hide();
-            }
-            else
-            {
-                MessageBox.Show("Thông tin đăng nhập không chính xác!");
+                TKNhanVien tkNhanVien = await Task.Run(() =>
+                {
+                    using (Model1 db = new Model1())
+                    {
+                        return db.TKNhanViens.SingleOrDefault(x => x.Username == username && x.PasswordHash == password);
+                    }
+                });
+
+                loading.Close();
+
+                if (tkNhanVien != null)
+                {
+                    FrmMain f = new FrmMain(tkNhanVien);
+                    f.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    MessageBox.Show("Đăng nhập thất bại");
+                }
             }
         }
 

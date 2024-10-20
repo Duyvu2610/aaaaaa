@@ -1,16 +1,13 @@
 namespace LNBT.Model
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
     [Table("TKNhanVien")]
     public partial class TKNhanVien
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int EmployeeID { get; set; }
 
         [Required]

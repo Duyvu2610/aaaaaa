@@ -31,9 +31,13 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnXoaMon = new System.Windows.Forms.Button();
             this.nmSoLuongMon = new System.Windows.Forms.NumericUpDown();
+            this.btnThemMon = new System.Windows.Forms.Button();
             this.cbDoUong = new System.Windows.Forms.ComboBox();
             this.cbLoaiDoUong = new System.Windows.Forms.ComboBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.txtGiamGia = new System.Windows.Forms.TextBox();
             this.txbThanhTien = new System.Windows.Forms.TextBox();
             this.btnThanhToan = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -47,16 +51,12 @@
             this.thôngTinTàiKhoảnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ThongTinCaNhanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DangXuatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnThemMon = new System.Windows.Forms.Button();
-            this.txtGiamGia = new System.Windows.Forms.TextBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nmSoLuongMon)).BeginInit();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel4
@@ -79,6 +79,7 @@
             this.btnXoaMon.TabIndex = 3;
             this.btnXoaMon.Text = "Xóa Món";
             this.btnXoaMon.UseVisualStyleBackColor = true;
+            this.btnXoaMon.Click += new System.EventHandler(this.btnXoaMon_Click);
             // 
             // nmSoLuongMon
             // 
@@ -96,14 +97,30 @@
             0,
             0,
             0});
+            this.nmSoLuongMon.ValueChanged += new System.EventHandler(this.nmSoLuongMon_ValueChanged);
+            // 
+            // btnThemMon
+            // 
+            this.btnThemMon.Location = new System.Drawing.Point(310, 3);
+            this.btnThemMon.Name = "btnThemMon";
+            this.btnThemMon.Size = new System.Drawing.Size(112, 46);
+            this.btnThemMon.TabIndex = 2;
+            this.btnThemMon.Text = "Thêm món";
+            this.btnThemMon.UseVisualStyleBackColor = true;
+            this.btnThemMon.Click += new System.EventHandler(this.btnThemMon_Click);
             // 
             // cbDoUong
             // 
             this.cbDoUong.FormattingEnabled = true;
+            this.cbDoUong.Items.AddRange(new object[] {
+            "Option 1",
+            "Option 2",
+            "Option 3"});
             this.cbDoUong.Location = new System.Drawing.Point(3, 28);
             this.cbDoUong.Name = "cbDoUong";
             this.cbDoUong.Size = new System.Drawing.Size(303, 21);
             this.cbDoUong.TabIndex = 1;
+            this.cbDoUong.SelectedIndexChanged += new System.EventHandler(this.cbDoUong_SelectedIndexChanged);
             // 
             // cbLoaiDoUong
             // 
@@ -112,6 +129,7 @@
             this.cbLoaiDoUong.Name = "cbLoaiDoUong";
             this.cbLoaiDoUong.Size = new System.Drawing.Size(303, 21);
             this.cbLoaiDoUong.TabIndex = 0;
+            this.cbLoaiDoUong.SelectedIndexChanged += new System.EventHandler(this.cbLoaiDoUong_SelectedIndexChanged);
             // 
             // panel3
             // 
@@ -124,6 +142,43 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(621, 52);
             this.panel3.TabIndex = 8;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(140, 14);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(70, 25);
+            this.textBox1.TabIndex = 10;
+            this.textBox1.Text = "Tổng :";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(13, 27);
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(100, 20);
+            this.numericUpDown1.TabIndex = 9;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // txtGiamGia
+            // 
+            this.txtGiamGia.Location = new System.Drawing.Point(13, 6);
+            this.txtGiamGia.Name = "txtGiamGia";
+            this.txtGiamGia.Size = new System.Drawing.Size(100, 20);
+            this.txtGiamGia.TabIndex = 8;
+            this.txtGiamGia.Text = "Giảm Giá";
+            this.txtGiamGia.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txbThanhTien
             // 
@@ -146,6 +201,7 @@
             this.btnThanhToan.TabIndex = 3;
             this.btnThanhToan.Text = "Thanh toán";
             this.btnThanhToan.UseVisualStyleBackColor = true;
+            this.btnThanhToan.Click += new System.EventHandler(this.btnThanhToan_Click);
             // 
             // panel2
             // 
@@ -233,52 +289,6 @@
             this.DangXuatToolStripMenuItem.Text = "Đăng xuất";
             this.DangXuatToolStripMenuItem.Click += new System.EventHandler(this.đăngXuấtToolStripMenuItem_Click);
             // 
-            // btnThemMon
-            // 
-            this.btnThemMon.Location = new System.Drawing.Point(310, 3);
-            this.btnThemMon.Name = "btnThemMon";
-            this.btnThemMon.Size = new System.Drawing.Size(112, 46);
-            this.btnThemMon.TabIndex = 2;
-            this.btnThemMon.Text = "Thêm món";
-            this.btnThemMon.UseVisualStyleBackColor = true;
-            // 
-            // txtGiamGia
-            // 
-            this.txtGiamGia.Location = new System.Drawing.Point(13, 6);
-            this.txtGiamGia.Name = "txtGiamGia";
-            this.txtGiamGia.Size = new System.Drawing.Size(100, 20);
-            this.txtGiamGia.TabIndex = 8;
-            this.txtGiamGia.Text = "Giảm Giá";
-            this.txtGiamGia.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Location = new System.Drawing.Point(13, 27);
-            this.numericUpDown1.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(100, 20);
-            this.numericUpDown1.TabIndex = 9;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(140, 14);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(70, 25);
-            this.textBox1.TabIndex = 10;
-            this.textBox1.Text = "Tổng :";
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -296,10 +306,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nmSoLuongMon)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.panel2.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
