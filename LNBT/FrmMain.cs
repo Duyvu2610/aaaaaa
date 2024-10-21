@@ -120,17 +120,23 @@ namespace LNBT
             {
                 string productName = cbDoUong.Text;
                 int quantity = (int)nmSoLuongMon.Value;
+                int discount = (int)numericUpDown1.Value;
                 var product = db.SanPhams.FirstOrDefault(p => p.TenSanPham == productName);
+                if (discount > product.Gia)
+                {
+                    MessageBox.Show("Số tiền giảm không được vượt quá giá của sản phẩm");
+                    return;
+                }
                 if (product == null)
                 {
-                    MessageBox.Show("Product not found.");
+                    MessageBox.Show("Không tìm thấy sản phẩm");
                     return;
                 }
 
                 ListViewItem item = new ListViewItem(productName);
                 item.SubItems.Add(quantity.ToString());
                 item.SubItems.Add(product.Gia.ToString());
-                item.SubItems.Add((product.Gia * quantity).ToString());
+                item.SubItems.Add(((product.Gia - discount) * quantity).ToString());
                 listView1.Items.Add(item);
                 decimal total = 0;
                 foreach (ListViewItem i in listView1.Items)
@@ -180,10 +186,11 @@ namespace LNBT
                 {
                     string productName = item.SubItems[0].Text;
                     int quantity = int.Parse(item.SubItems[1].Text);
+                    decimal total = decimal.Parse(item.SubItems[3].Text);
                     SanPham product = db.SanPhams.FirstOrDefault(p => p.TenSanPham == productName);
                     if (product == null)
                     {
-                        MessageBox.Show("Product not found.");
+                        MessageBox.Show("Không tìm thấy sản phẩm");
                         return;
                     }
 
@@ -192,7 +199,7 @@ namespace LNBT
                         MaKhachHang = 1,
                         MaNhanVien = _tKNhanVien.EmployeeID,
                         NgayDatHang = DateTime.Now,
-                        TongTien = product.Gia * quantity,
+                        TongTien = total,
                         TrangThaiDonHang = "Hoàn thành"
                     };
 
@@ -204,7 +211,7 @@ namespace LNBT
                         MaSanPham = product.MaSanPham,
                         SoLuong = quantity,
                         Gia = product.Gia,
-                        ThanhTien = product.Gia * quantity
+                        ThanhTien = total
                     };
 
                     db.ChiTietDonHangs.Add(chiTietDonHang);
@@ -214,6 +221,7 @@ namespace LNBT
                 MessageBox.Show("Thanh toán thành công.");
                 listView1.Items.Clear();
                 txbThanhTien.Text = "0";
+                numericUpDown1.Value = 0;
             }
         }
     }
