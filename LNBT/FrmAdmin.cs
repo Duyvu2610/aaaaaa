@@ -524,7 +524,15 @@ namespace LNBT
 
             using (Model1 db = new Model1()) 
             {
-                DanhMuc newCategory = new DanhMuc
+                DanhMuc newCategory = db.DanhMucs.FirstOrDefault(d => d.TenDanhMuc == name);
+
+                if (newCategory != null)
+                {
+                    MessageBox.Show("Danh mục đã tồn tại.");
+                    return;
+                }
+
+                newCategory = new DanhMuc
                 {
                     TenDanhMuc = name
                 };
@@ -535,6 +543,7 @@ namespace LNBT
                 MessageBox.Show("Danh mục đã được thêm thành công.");
 
                 dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
+                dtgvDanhMuc.Columns["SanPhams"].Visible = false;
             }
         }
 
@@ -560,6 +569,7 @@ namespace LNBT
                 }
                 db.SaveChanges();
                 dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
+                dtgvDanhMuc.Columns["SanPhams"].Visible = false;
                 MessageBox.Show("Danh mục đã được xóa thành công.");
             }
         }
@@ -586,7 +596,10 @@ namespace LNBT
                 }
                 db.SaveChanges();
                 MessageBox.Show("Danh mục đã được cập nhật thành công.");
+                dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
+                dtgvDanhMuc.Columns["SanPhams"].Visible = false;
             }
+
         }
     }
 }

@@ -55,5 +55,26 @@ namespace LNBT
             Application.Exit();
         }
 
+        private void linklabelQuenMK_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (txtTenDangNhap.Text == "")
+            {
+                MessageBox.Show("Vui lòng nhập tên đăng nhập để lấy lại mật khẩu");
+                return;
+            }
+            using (Model1 db = new Model1())
+            {
+                TKNhanVien tkNhanVien = db.TKNhanViens.SingleOrDefault(x => x.Username == txtTenDangNhap.Text);
+                if (tkNhanVien == null)
+                {
+                    MessageBox.Show("Tên đăng nhập không tồn tại");
+                    return;
+                }
+                tkNhanVien.PasswordHash = "123";
+                MessageBox.Show("Mật khẩu mới của bạn là: " + 1234);
+                db.SaveChanges();
+
+            }
+        }
     }
 }

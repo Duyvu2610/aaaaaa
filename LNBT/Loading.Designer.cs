@@ -44,19 +44,19 @@
             this.label1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 20);
             this.label1.Size = new System.Drawing.Size(278, 211);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Please wait...";
             this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // Loading
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(278, 211);
             this.Controls.Add(this.label1);
             this.ForeColor = System.Drawing.Color.Transparent;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Loading";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Opacity = 0.7D;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Loading";
             this.ResumeLayout(false);
 
