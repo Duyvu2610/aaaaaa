@@ -60,7 +60,16 @@ namespace LNBT
                 return;
             }
             FrmAdmin f = new FrmAdmin();
+            f.FormClosed += new FormClosedEventHandler(AdminForm_FormClosed);
             f.ShowDialog();
+        }
+
+        private void AdminForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            List<string> types = selectTypeProduct();
+            cbLoaiDoUong.DataSource = types;
+            List<string> products = getProductByType();
+            cbDoUong.DataSource = products;
         }
 
         private void cbLoaiDoUong_SelectedIndexChanged(object sender, EventArgs e)
