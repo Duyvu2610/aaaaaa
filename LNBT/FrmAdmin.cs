@@ -171,31 +171,37 @@ namespace LNBT
 
             if (string.IsNullOrEmpty(product_name))
             {
-                MessageBox.Show("Please enter a product name.");
+                MessageBox.Show("Vui lòng nhập tên sản phẩm");
                 return;
             }
 
             if (string.IsNullOrEmpty(ProductDescription))
             {
-                MessageBox.Show("Please enter a product description.");
+                MessageBox.Show("Vui lòng nhập mô tả sản phẩm");
                 return;
             }
 
             if (string.IsNullOrEmpty(ProductStatus))
             {
-                MessageBox.Show("Please enter a product status.");
+                MessageBox.Show("Vui lòng nhập trạng thái của sản phẩm");
                 return;
             }
 
             if (price <= 0)
             {
-                MessageBox.Show("Please enter a valid price.");
+                MessageBox.Show("Vui lòng nhập giá của sản phẩm");
                 return;
             }
 
             using (Model1 db = new Model1())
             {
-                var newProduct = new SanPham
+                SanPham sanPham = db.SanPhams.FirstOrDefault(p => p.TenSanPham == product_name);
+                if (sanPham != null)
+                {
+                    MessageBox.Show("Sản phẩm đã tồn tại");
+                    return;
+                }
+                sanPham = new SanPham
                 {
                     TenSanPham = product_name,
                     MoTa = ProductDescription,
@@ -205,13 +211,13 @@ namespace LNBT
                     KhuyenMai = 0
                 };
 
-                db.SanPhams.Add(newProduct);
+                db.SanPhams.Add(sanPham);
                 db.SaveChanges();
 
-                MessageBox.Show("Product added successfully.");
+                MessageBox.Show("Sản phẩm đã thêm thành công");
 
-                view_all_product(sender, e);
             }
+            view_all_product(sender, e);
         }
 
         private void view_all_product(object sender, EventArgs e)
