@@ -1,4 +1,5 @@
 ﻿using LNBT.Model;
+using LNBT.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,9 +29,9 @@ namespace LNBT
             NhanVien nhanVien = db.NhanViens.SingleOrDefault(x => x.MaNhanVien == tKNhanVien.EmployeeID);
             txtTenDangNhap.Text = tKNhanVien.Username;
             txtTenHienThi.Text = nhanVien.TenNhanVien;
-            txtMatKhau.Text = tKNhanVien.PasswordHash;
-            txtMatKhauMoi.Text = tKNhanVien.PasswordHash;
-            txtNhapLai.Text = tKNhanVien.PasswordHash;
+            txtMatKhau.Text = PasswordUtil.DecryptPassword(tKNhanVien.PasswordHash);
+            txtMatKhauMoi.Text = PasswordUtil.DecryptPassword(tKNhanVien.PasswordHash);
+            txtNhapLai.Text = PasswordUtil.DecryptPassword(tKNhanVien.PasswordHash);
         }
 
         private void btnThoat_Click(object sender, EventArgs e)
@@ -48,12 +49,12 @@ namespace LNBT
             using(Model1 db = new Model1())
             {
                 TKNhanVien tKNhanVien = db.TKNhanViens.SingleOrDefault(x => x.Username == _tKNhanVien.Username);
-                tKNhanVien.PasswordHash = txtMatKhauMoi.Text;
+                tKNhanVien.PasswordHash = PasswordUtil.EncryptPassword(txtMatKhauMoi.Text);
                 NhanVien nhanVien = db.NhanViens.SingleOrDefault(x => x.MaNhanVien == tKNhanVien.EmployeeID);
                 nhanVien.TenNhanVien = txtTenHienThi.Text;
-                if (txtNhapLai.Text != tKNhanVien.PasswordHash)
+                if (txtNhapLai.Text != txtMatKhauMoi.Text)
                 {
-                    MessageBox.Show("Mật khẩu không đúng");
+                    MessageBox.Show("Mật khẩu nhập lại không khớp");
                     return;
                 }
                 db.SaveChanges();
