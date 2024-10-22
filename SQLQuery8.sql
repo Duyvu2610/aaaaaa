@@ -142,7 +142,7 @@ SELECT * FROM HoaDon;
 -- Insert vào bảng TKNhanVien  
 INSERT INTO TKNhanVien (Username, PasswordHash, Role, CreatedAt, UpdatedAt)  
 VALUES  
-('user1', '123', 'Admin', GETDATE(), GETDATE()),  
-('user2', '123', 'User', GETDATE(), GETDATE());  
+('user1', 'K1ALiSaA0n9lkSMSzMTFCg==', 'Admin', GETDATE(), GETDATE()),
+('user2', 'K1ALiSaA0n9lkSMSzMTFCg==', 'User', GETDATE(), GETDATE());
 
 

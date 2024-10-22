@@ -1,4 +1,5 @@
 ﻿using LNBT.Model;
+using LNBT.Util;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,13 +25,13 @@ namespace LNBT
             {
                 loading.Show();
                 string username = txtTenDangNhap.Text;
-                string password = txtMatKhau.Text;
+                string passwordHash = PasswordUtil.EncryptPassword(txtMatKhau.Text);
 
                 TKNhanVien tkNhanVien = await Task.Run(() =>
                 {
                     using (Model1 db = new Model1())
                     {
-                        return db.TKNhanViens.SingleOrDefault(x => x.Username == username && x.PasswordHash == password);
+                        return db.TKNhanViens.SingleOrDefault(x => x.Username == username && x.PasswordHash == passwordHash);
                     }
                 });
 
@@ -70,7 +71,7 @@ namespace LNBT
                     MessageBox.Show("Tên đăng nhập không tồn tại");
                     return;
                 }
-                tkNhanVien.PasswordHash = "123";
+                tkNhanVien.PasswordHash = PasswordUtil.EncryptPassword("1234");
                 MessageBox.Show("Mật khẩu mới của bạn là: " + 1234);
                 db.SaveChanges();
 

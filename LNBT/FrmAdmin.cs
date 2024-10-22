@@ -6,6 +6,7 @@ using System.Linq;
 using System.Data.Entity;
 using System.Windows.Forms;
 using LNBT.Dto;
+using LNBT.Util;
 
 namespace LNBT
 {
@@ -392,7 +393,7 @@ namespace LNBT
                 TKNhanVien tKNhanVien = new TKNhanVien
                 {
                     Username = username,
-                    PasswordHash = password,
+                    PasswordHash = PasswordUtil.EncryptPassword(password),
                     Role = role,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
@@ -495,7 +496,7 @@ namespace LNBT
 
                     // Update the user's information
                     user.Username = row.Cells[1].Value.ToString();
-                    user.PasswordHash = row.Cells[2].Value.ToString();
+                    user.PasswordHash = PasswordUtil.EncryptPassword(row.Cells[2].Value.ToString());
                     user.Role = row.Cells[3].Value.ToString();
 
                     // Save the changes to the database
