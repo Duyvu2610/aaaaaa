@@ -128,7 +128,7 @@ namespace LNBT
                 db.SaveChanges();
             }
             MessageBox.Show("Product deleted successfully.");
-            dtgvDoUong.DataSource = db.SanPhams.ToList();
+            view_all_product(sender, e);
         }
 
 
@@ -144,9 +144,30 @@ namespace LNBT
                 return;
             } 
 
-            List<SanPham> ListProduct = db.SanPhams.Where(p => p.TenSanPham.Contains(productName)).ToList();
+            List<ProductDTO> products = db.SanPhams
+                    .Where(p => p.TenSanPham.Contains(productName))
+                    .Include(sp => sp.DanhMuc)
+                    .Select(sp => new ProductDTO
+                    {
+                        MaSanPham = sp.MaSanPham,
+                        TenSanPham = sp.TenSanPham,
+                        Gia = sp.Gia,
+                        TenDanhMuc = sp.DanhMuc.TenDanhMuc,
+                        MoTa = sp.MoTa,
+                        TrangThai = sp.TrangThai,
+                        KhuyenMai = sp.KhuyenMai
+                    })
+                    .ToList();
 
-            dtgvDoUong.DataSource = ListProduct;
+                dtgvDoUong.DataSource = products;
+                dtgvDoUong.Columns["MaSanPham"].DataPropertyName = "MaSanPham";
+                dtgvDoUong.Columns["TenSanPham"].DataPropertyName = "TenSanPham";
+                dtgvDoUong.Columns["Gia"].DataPropertyName = "Gia";
+                dtgvDoUong.Columns["TenDanhMuc"].DataPropertyName = "TenDanhMuc"; 
+                dtgvDoUong.Columns["MoTa"].DataPropertyName = "MoTa";
+                dtgvDoUong.Columns["TrangThai"].DataPropertyName = "TrangThai";
+                dtgvDoUong.Columns["KhuyenMai"].DataPropertyName = "KhuyenMai";
+
         }
 
         private int convertFromTenDanhMucToId(string tenDanhMuc)
@@ -263,11 +284,10 @@ namespace LNBT
                     int product_id = Convert.ToInt32(row.Cells[0].Value);
                     int LoaiSanPham = convertFromTenDanhMucToId(row.Cells[3].Value.ToString());
                     SanPham product = db.SanPhams.FirstOrDefault(p => p.MaSanPham == product_id);
-                    bool isHasLoaiSanPham = convertFromTenDanhMucToId(cbLoai.Text) != -1;
-                    if (!isHasLoaiSanPham)
+                    if (LoaiSanPham == -1)
                     {
                         MessageBox.Show("Loại sản phẩm không tồn tại.");
-                        dtgvDoUong.DataSource = db.SanPhams.ToList();
+                        view_all_product(sender, e);
                         return;
                     }
                     if (product != null)
@@ -281,9 +301,9 @@ namespace LNBT
                     }
                     db.SaveChanges();
                 }
-            MessageBox.Show("Product updated successfully.");
-            view_all_product(sender, e);
+            MessageBox.Show("Cập nhật sản phẩm thành công");
             }
+            view_all_product(sender, e);
         }
 
 
