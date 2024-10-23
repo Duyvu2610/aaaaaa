@@ -17,7 +17,6 @@ namespace LNBT.Model
 
         public decimal Gia { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public decimal? ThanhTien { get; set; }
 
         public virtual DonHang DonHang { get; set; }
