@@ -65,7 +65,7 @@ CREATE TABLE ChiTietDonHang (
     MaSanPham INT,  
     SoLuong INT NOT NULL,  
     Gia DECIMAL(10, 2) NOT NULL,  
-    ThanhTien AS (SoLuong * Gia),  
+    ThanhTien DECIMAL(10, 2),  
     FOREIGN KEY (MaDonHang) REFERENCES DonHang(MaDonHang),  
     FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSanPham)  
 );  
