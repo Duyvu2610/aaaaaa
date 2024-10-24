@@ -839,7 +839,6 @@ namespace LNBT
             dtgvDoUong.RowHeadersWidth = 51;
             dtgvDoUong.Size = new System.Drawing.Size(541, 448);
             dtgvDoUong.TabIndex = 0;
-            dtgvDoUong.AutoGenerateColumns = false;
             // 
             // tabDoanhThu
             // 
@@ -870,7 +869,7 @@ namespace LNBT
             // 
             // btnQuayLai
             // 
-            this.btnQuayLai.Location = new System.Drawing.Point(634, 503);
+            this.btnQuayLai.Location = new System.Drawing.Point(243, 498);
             this.btnQuayLai.Name = "btnQuayLai";
             this.btnQuayLai.Size = new System.Drawing.Size(75, 33);
             this.btnQuayLai.TabIndex = 7;
@@ -880,7 +879,7 @@ namespace LNBT
             // 
             // btnQuaTrang
             // 
-            this.btnQuaTrang.Location = new System.Drawing.Point(246, 506);
+            this.btnQuaTrang.Location = new System.Drawing.Point(635, 498);
             this.btnQuaTrang.Name = "btnQuaTrang";
             this.btnQuaTrang.Size = new System.Drawing.Size(75, 33);
             this.btnQuaTrang.TabIndex = 6;
@@ -890,7 +889,7 @@ namespace LNBT
             // 
             // btnCuoi
             // 
-            this.btnCuoi.Location = new System.Drawing.Point(866, 503);
+            this.btnCuoi.Location = new System.Drawing.Point(866, 498);
             this.btnCuoi.Name = "btnCuoi";
             this.btnCuoi.Size = new System.Drawing.Size(75, 33);
             this.btnCuoi.TabIndex = 5;
@@ -900,7 +899,7 @@ namespace LNBT
             // 
             // btnDau
             // 
-            this.btnDau.Location = new System.Drawing.Point(11, 503);
+            this.btnDau.Location = new System.Drawing.Point(11, 498);
             this.btnDau.Name = "btnDau";
             this.btnDau.Size = new System.Drawing.Size(75, 33);
             this.btnDau.TabIndex = 4;
@@ -975,6 +974,11 @@ namespace LNBT
             this.page.Name = "page";
             this.page.Size = new System.Drawing.Size(90, 20);
             this.page.TabIndex = 0;
+            this.page.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.page.Visible = false;
             // 
             // dtpkTuNgay

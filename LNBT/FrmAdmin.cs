@@ -7,6 +7,8 @@ using System.Data.Entity;
 using System.Windows.Forms;
 using LNBT.Dto;
 using LNBT.Util;
+using System.Drawing.Printing;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace LNBT
 {
@@ -24,14 +26,19 @@ namespace LNBT
         }
         private void setPageText(object sender, EventArgs e)
         {
-            txtSoTrang.Text = String.Format("{0}/{1}", totalPage.Value > 0 ? page.Value + 1 : page.Value, totalPage.Value);
+            txtSoTrang.Text = String.Format("{0}/{1}", page.Value, totalPage.Value);
         }
         private void btnNextPage_Click(object sender, EventArgs e)
         {
-            if ((int)page.Value < totalPage.Value - 1)
+            if ((int)page.Value < totalPage.Value)
             {
                 page.Value++;
             }
+            if (dtgvDoanhThu.DataSource == null)
+            {
+                return;
+            }
+            GetData((int)page.Value);
         }
 
         private void btnPrevPage_Click(object sender, EventArgs e)
@@ -40,22 +47,66 @@ namespace LNBT
             {
                 page.Value--;
             }
+            if (dtgvDoanhThu.DataSource == null)
+            {
+                return;
+            }
+            GetData((int)page.Value);
         }
 
         private void btnFirstPage_Click(object sender, EventArgs e)
         {
-            page.Value = 0;
+            if (dtgvDoanhThu.DataSource == null)
+            {
+                return;
+            }
+            page.Value = 1;
+            GetData((int)page.Value);
         }
 
         private void btnLastPage_Click(object sender, EventArgs e)
         {
-            page.Value = totalPage.Value - 1;
+            if (dtgvDoanhThu.DataSource == null)
+            {
+                return;
+            }
+            page.Value = totalPage.Value;
+            GetData((int)page.Value);
         }
 
 
         private void changePage(int page)
         {
             this.page.Value = page;
+        }
+
+        private void GetData(int currentPage)
+        {
+            using (Model1 db = new Model1())
+            {
+                DateTime startDate = dtpkTuNgay.Value;
+                DateTime endDate = dtpkDenNgay.Value;
+
+                var productRevenue = db.ChiTietDonHangs
+                    .Join(db.SanPhams, ctdh => ctdh.MaSanPham, sp => sp.MaSanPham, (ctdh, sp) => new { ctdh, sp })
+                    .Join(db.DonHangs, combined => combined.ctdh.MaDonHang, dh => dh.MaDonHang, (combined, dh) => new { combined.ctdh, combined.sp, dh })
+                    .Where(order => order.dh.NgayDatHang >= startDate && order.dh.NgayDatHang <= endDate && order.dh.TrangThaiDonHang == "Hoàn thành")
+                    .GroupBy(item => new { item.sp.MaSanPham, item.sp.TenSanPham })
+                    .Select(group => new
+                    {
+                        ProductName = group.Key.TenSanPham,
+                        TotalRevenue = group.Sum(item => item.ctdh.ThanhTien),
+                        TotalUnitsSold = group.Sum(item => item.ctdh.SoLuong),
+                        FirstOrderDate = group.Min(item => item.dh.NgayDatHang),
+                        LastOrderDate = group.Max(item => item.dh.NgayDatHang)
+                    })
+                    .OrderByDescending(result => result.TotalRevenue)
+                    .Skip((currentPage - 1) * 10)
+                    .Take(10)
+                    .ToList();
+                dtgvDoanhThu.DataSource = productRevenue;
+                txtSoTrang.Text = String.Format("{0}/{1}", page.Value, totalPage.Value);
+            }
         }
 
         private void GetProductRevenue(object sender, EventArgs e)
@@ -89,13 +140,16 @@ namespace LNBT
                         LastOrderDate = group.Max(item => item.dh.NgayDatHang)
                     })
                     .OrderByDescending(result => result.TotalRevenue)
-                    .Skip(pageNumber * pageSize)
-                    .Take(pageSize)
+                    //.Skip((pageNumber - 1) * 10)
+                    //.Take(pageSize)
                     .ToList();
+                totalPage.Value = (int)Math.Ceiling((double)productRevenue.Count / pageSize);
+                label3.Text = productRevenue.Sum(p => p.TotalRevenue).ToString() + " VND";
 
                 if (productRevenue.Count > 0)
                 {
-                    dtgvDoanhThu.DataSource = productRevenue;
+                    var product = productRevenue.Skip((pageNumber - 1) * 10).Take(pageSize).ToList();
+                    dtgvDoanhThu.DataSource = product;
                 }
                 else
                 {
@@ -103,12 +157,8 @@ namespace LNBT
                     dtgvDoanhThu.DataSource = null;
 
                 }
-                totalPage.Value = productRevenue.Count;
-                label3.Text = productRevenue.Sum(p => p.TotalRevenue).ToString() + " VND";
 
                 setPageText(sender, e);
-
-
 
             }
         }
