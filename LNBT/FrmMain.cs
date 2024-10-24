@@ -9,6 +9,8 @@ namespace LNBT
     public partial class FrmMain : Form
     {
         private TKNhanVien _tKNhanVien;
+
+        private decimal sum;
         public FrmMain(TKNhanVien tKNhanVien)
         {
             InitializeComponent();
@@ -122,6 +124,7 @@ namespace LNBT
                 int quantity = (int)nmSoLuongMon.Value;
                 int discount = (int)numericUpDown1.Value;
                 var product = db.SanPhams.FirstOrDefault(p => p.TenSanPham == productName);
+                decimal price = (product.Gia - discount) * quantity;
                 if (discount > product.Gia)
                 {
                     MessageBox.Show("Số tiền giảm không được vượt quá giá của sản phẩm");
@@ -136,9 +139,10 @@ namespace LNBT
                 ListViewItem item = new ListViewItem(productName);
                 item.SubItems.Add(quantity.ToString());
                 item.SubItems.Add(product.Gia.ToString());
-                item.SubItems.Add(((product.Gia - discount) * quantity).ToString());
+                item.SubItems.Add(price.ToString());
                 listView1.Items.Add(item);
                 decimal total = 0;
+                sum += price;
                 foreach (ListViewItem i in listView1.Items)
                 {
                     total += decimal.Parse(i.SubItems[3].Text);
@@ -169,9 +173,11 @@ namespace LNBT
             }
 
             decimal total = 0;
+            sum = 0;
             foreach (ListViewItem i in listView1.Items)
             {
                 total += decimal.Parse(i.SubItems[3].Text);
+                sum += decimal.Parse(i.SubItems[3].Text);
             }
 
             txbThanhTien.Text = total.ToString();
@@ -179,8 +185,25 @@ namespace LNBT
 
         private void btnThanhToan_Click(object sender, EventArgs e)
         {
+            if (listView1.Items.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn món.");
+                return;
+            }
             using (Model1 db = new Model1())
             {
+                // Thêm đơn hàng
+                DonHang donHang = new DonHang()
+                {
+                    MaKhachHang = 1,
+                    MaNhanVien = _tKNhanVien.EmployeeID,
+                    NgayDatHang = DateTime.Now,
+                    TongTien = sum,
+                    TrangThaiDonHang = "Đang thanh toán"
+                };
+
+                db.DonHangs.Add(donHang);
+                db.SaveChanges();
 
                 foreach (ListViewItem item in listView1.Items)
                 {
@@ -193,18 +216,7 @@ namespace LNBT
                         MessageBox.Show("Không tìm thấy sản phẩm");
                         return;
                     }
-
-                    DonHang donHang = new DonHang()
-                    {
-                        MaKhachHang = 1,
-                        MaNhanVien = _tKNhanVien.EmployeeID,
-                        NgayDatHang = DateTime.Now,
-                        TongTien = total,
-                        TrangThaiDonHang = "Hoàn thành"
-                    };
-
-                    db.DonHangs.Add(donHang);
-
+                    // Thêm chi tiết đơn hàng
                     ChiTietDonHang chiTietDonHang = new ChiTietDonHang()
                     {
                         MaDonHang = donHang.MaDonHang,
@@ -217,11 +229,13 @@ namespace LNBT
                     db.ChiTietDonHangs.Add(chiTietDonHang);
                     db.SaveChanges();
                 }
-
-                MessageBox.Show("Thanh toán thành công.");
+                FrmThongTinNguoiMua f = new FrmThongTinNguoiMua(donHang);
+                f.ShowDialog();
+                
                 listView1.Items.Clear();
                 txbThanhTien.Text = "0";
                 numericUpDown1.Value = 0;
+                sum = 0;
             }
         }
     }

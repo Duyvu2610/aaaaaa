@@ -9,12 +9,6 @@ namespace LNBT.Model
     [Table("DonHang")]
     public partial class DonHang
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public DonHang()
-        {
-            ChiTietDonHangs = new HashSet<ChiTietDonHang>();
-            HoaDons = new HashSet<HoaDon>();
-        }
 
         [Key]
         public int MaDonHang { get; set; }
@@ -31,14 +25,8 @@ namespace LNBT.Model
         [StringLength(50)]
         public string TrangThaiDonHang { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
-
         public virtual KhachHang KhachHang { get; set; }
-
         public virtual NhanVien NhanVien { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<HoaDon> HoaDons { get; set; }
+        public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
     }
 }
