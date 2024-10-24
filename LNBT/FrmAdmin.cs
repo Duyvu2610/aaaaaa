@@ -140,8 +140,6 @@ namespace LNBT
                         LastOrderDate = group.Max(item => item.dh.NgayDatHang)
                     })
                     .OrderByDescending(result => result.TotalRevenue)
-                    //.Skip((pageNumber - 1) * 10)
-                    //.Take(pageSize)
                     .ToList();
                 totalPage.Value = (int)Math.Ceiling((double)productRevenue.Count / pageSize);
                 label3.Text = productRevenue.Sum(p => p.TotalRevenue).ToString() + " VND";
