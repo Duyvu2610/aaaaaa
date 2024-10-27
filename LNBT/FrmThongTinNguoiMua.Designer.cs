@@ -37,11 +37,13 @@
             this.tbSdt = new System.Windows.Forms.TextBox();
             this.tbEmail = new System.Windows.Forms.TextBox();
             this.dtNgaySinh = new System.Windows.Forms.DateTimePicker();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbDiemTichLuy = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnKiemTra
             // 
-            this.btnKiemTra.Location = new System.Drawing.Point(277, 164);
+            this.btnKiemTra.Location = new System.Drawing.Point(277, 184);
             this.btnKiemTra.Name = "btnKiemTra";
             this.btnKiemTra.Size = new System.Drawing.Size(75, 23);
             this.btnKiemTra.TabIndex = 2;
@@ -113,11 +115,31 @@
             this.dtNgaySinh.Size = new System.Drawing.Size(200, 20);
             this.dtNgaySinh.TabIndex = 11;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(54, 158);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(100, 13);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Dùng điểm tích lũy ";
+            // 
+            // cbDiemTichLuy
+            // 
+            this.cbDiemTichLuy.AutoSize = true;
+            this.cbDiemTichLuy.Location = new System.Drawing.Point(152, 158);
+            this.cbDiemTichLuy.Name = "cbDiemTichLuy";
+            this.cbDiemTichLuy.Size = new System.Drawing.Size(15, 14);
+            this.cbDiemTichLuy.TabIndex = 13;
+            this.cbDiemTichLuy.UseVisualStyleBackColor = true;
+            // 
             // FrmThongTinNguoiMua
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(416, 219);
+            this.Controls.Add(this.cbDiemTichLuy);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.dtNgaySinh);
             this.Controls.Add(this.tbEmail);
             this.Controls.Add(this.tbSdt);
@@ -145,5 +167,7 @@
         private System.Windows.Forms.TextBox tbSdt;
         private System.Windows.Forms.TextBox tbEmail;
         private System.Windows.Forms.DateTimePicker dtNgaySinh;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox cbDiemTichLuy;
     }
 }

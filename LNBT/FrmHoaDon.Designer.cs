@@ -46,6 +46,8 @@
             this.lbDiem = new System.Windows.Forms.Label();
             this.lbTongTien = new System.Windows.Forms.Label();
             this.lbNhanVien = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lbDiemDaDung = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -103,7 +105,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(72, 131);
+            this.label4.Location = new System.Drawing.Point(72, 106);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(101, 13);
             this.label4.TabIndex = 4;
@@ -138,7 +140,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(72, 90);
+            this.label8.Location = new System.Drawing.Point(72, 78);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(72, 13);
             this.label8.TabIndex = 8;
@@ -164,7 +166,7 @@
             // lbNgay
             // 
             this.lbNgay.AutoSize = true;
-            this.lbNgay.Location = new System.Drawing.Point(184, 131);
+            this.lbNgay.Location = new System.Drawing.Point(184, 106);
             this.lbNgay.Name = "lbNgay";
             this.lbNgay.Size = new System.Drawing.Size(10, 13);
             this.lbNgay.TabIndex = 12;
@@ -182,7 +184,7 @@
             // lbDiem
             // 
             this.lbDiem.AutoSize = true;
-            this.lbDiem.Location = new System.Drawing.Point(184, 90);
+            this.lbDiem.Location = new System.Drawing.Point(184, 78);
             this.lbDiem.Name = "lbDiem";
             this.lbDiem.Size = new System.Drawing.Size(10, 13);
             this.lbDiem.TabIndex = 14;
@@ -206,11 +208,31 @@
             this.lbNhanVien.TabIndex = 16;
             this.lbNhanVien.Text = " ";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(72, 134);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(80, 13);
+            this.label3.TabIndex = 17;
+            this.label3.Text = "Điểm đã dùng :";
+            // 
+            // lbDiemDaDung
+            // 
+            this.lbDiemDaDung.AutoSize = true;
+            this.lbDiemDaDung.Location = new System.Drawing.Point(184, 134);
+            this.lbDiemDaDung.Name = "lbDiemDaDung";
+            this.lbDiemDaDung.Size = new System.Drawing.Size(10, 13);
+            this.lbDiemDaDung.TabIndex = 18;
+            this.lbDiemDaDung.Text = " ";
+            // 
             // FrmHoaDon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lbDiemDaDung);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.lbNhanVien);
             this.Controls.Add(this.lbTongTien);
             this.Controls.Add(this.lbDiem);
@@ -255,5 +277,7 @@
         private System.Windows.Forms.Label lbDiem;
         private System.Windows.Forms.Label lbTongTien;
         private System.Windows.Forms.Label lbNhanVien;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lbDiemDaDung;
     }
 }

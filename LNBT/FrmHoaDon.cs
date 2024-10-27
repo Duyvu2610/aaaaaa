@@ -14,11 +14,12 @@ namespace LNBT
     public partial class FrmHoaDon : Form
     {
         private HoaDon _hoaDon;
-        public FrmHoaDon(HoaDon hoaDon)
+        private int _diemDaDung;
+        public FrmHoaDon(HoaDon hoaDon, int diemDaDung)
         {
             InitializeComponent();
             _hoaDon = hoaDon;
-
+            _diemDaDung = diemDaDung;
         }
 
         private void FrmHoaDon_Load(object sender, EventArgs e)
@@ -28,6 +29,7 @@ namespace LNBT
             lbNgay.Text = _hoaDon.NgayLapHoaDon.ToString();
             lbTongTien.Text = _hoaDon.TongTien.ToString();
             lbNhanVien.Text = _hoaDon.DonHang.NhanVien.TenNhanVien;
+            lbDiemDaDung.Text = _diemDaDung.ToString();
 
             List<ChiTietDonHang> chiTietDonHangs = _hoaDon.DonHang.ChiTietDonHangs.ToList();
 

@@ -23,7 +23,7 @@ namespace LNBT.Model
         [StringLength(100)]
         public string Email { get; set; }
 
-        public int? DiemTichLuy { get; set; }
+        public int DiemTichLuy { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime? NgaySinh { get; set; }

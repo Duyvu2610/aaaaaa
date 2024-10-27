@@ -26,28 +26,40 @@ namespace LNBT
             string sdt = tbSdt.Text;
             string email = tbEmail.Text;
             DateTime ngaySinh = dtNgaySinh.Value;
+            decimal diemConLai = 0 ;
+            int diemDaDung = 0;
 
             using (Model1 db = new Model1())
             {
                 KhachHang khachHang = db.KhachHangs.SingleOrDefault(x => x.SoDienThoai == sdt);
+                bool isUsePoint = cbDiemTichLuy.Checked;
                 if (khachHang != null)
                 {
                     DonHang donHang1 = db.DonHangs.SingleOrDefault(x => x.MaDonHang == _donHang.MaDonHang);
                     donHang1.MaKhachHang = khachHang.MaKhachHang;
                     donHang1.TrangThaiDonHang = "Hoàn thành";
+                    khachHang.DiemTichLuy += (int)(_donHang.TongTien * (decimal)0.05);
                     HoaDon hoaDon1 = new HoaDon
                     {
                         MaDonHang = _donHang.MaDonHang,
                         NgayLapHoaDon = DateTime.Now,
                         TongTien = _donHang.TongTien,
                         TrangThaiThanhToan = "Hoàn thành"
-
                     };
+
+                    if (isUsePoint)
+                    {
+                        decimal tongTien = _donHang.TongTien > khachHang.DiemTichLuy ? _donHang.TongTien - khachHang.DiemTichLuy : 0;
+                        diemDaDung = (int)(hoaDon1.TongTien - tongTien);
+                        diemConLai = _donHang.TongTien > khachHang.DiemTichLuy ? 0 : khachHang.DiemTichLuy - _donHang.TongTien;
+                        khachHang.DiemTichLuy = (int)diemConLai;
+                        hoaDon1.TongTien = tongTien;
+                    }
+
                     db.HoaDons.Add(hoaDon1);
-                    khachHang.DiemTichLuy += (int)(_donHang.TongTien * (decimal)0.05);
                     db.SaveChanges();
                     MessageBox.Show("Đã cộng điểm tích lũy cho khách hàng");
-                    FrmHoaDon formHoaDon = new FrmHoaDon(hoaDon1);
+                    FrmHoaDon formHoaDon = new FrmHoaDon(hoaDon1, diemDaDung);
                     formHoaDon.ShowDialog();
                     this.Close();
                     return;
@@ -81,8 +93,18 @@ namespace LNBT
 
                 };
                 db.HoaDons.Add(hoaDon);
+
+                if (isUsePoint)
+                {
+                    decimal tongTien = _donHang.TongTien > khachHang.DiemTichLuy ? _donHang.TongTien - khachHang.DiemTichLuy : 0;
+                    diemDaDung = (int)(hoaDon.TongTien - tongTien);
+                    diemConLai = _donHang.TongTien > khachHang.DiemTichLuy ? 0 : khachHang.DiemTichLuy - _donHang.TongTien;
+                    khachHang.DiemTichLuy = (int)diemConLai;
+                    hoaDon.TongTien = tongTien;
+                }
+
                 db.SaveChanges();
-                FrmHoaDon f = new FrmHoaDon(hoaDon);
+                FrmHoaDon f = new FrmHoaDon(hoaDon, diemDaDung);
                 f.ShowDialog();
                 this.Close();
             }
