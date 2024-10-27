@@ -20,10 +20,6 @@ namespace LNBT
             dtpkTuNgay.Value = DateTime.Now.AddDays(-1);
         }
 
-        private void lblMaDoUong_Click(object sender, EventArgs e)
-        {
-            
-        }
         private void setPageText(object sender, EventArgs e)
         {
             txtSoTrang.Text = String.Format("{0}/{1}", page.Value, totalPage.Value);
@@ -354,68 +350,6 @@ namespace LNBT
             view_all_product(sender, e);
         }
 
-
-        private void FrmAdmin_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tabDoanhThu_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void tabDoUong_Click(object sender, EventArgs e)
-        {
-            using (Model1 db = new Model1())
-            {
-                List<string> danhMucNames = db.DanhMucs.Select(d => d.TenDanhMuc).ToList();
-
-                cbLoai.DataSource = danhMucNames;
-                view_all_product(sender, e);
-            }
-        }
-
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void dtgvDoanhThu_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void tabAdmin_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel11_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel12_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel14_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel15_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void tabTaiKhoan_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnThemTaiKhoan_Click(object sender, EventArgs e)
         {
             string username = txtTenTk.Text;
@@ -619,6 +553,9 @@ namespace LNBT
 
                 dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
                 dtgvDanhMuc.Columns["SanPhams"].Visible = false;
+
+                List<string> danhMucNames = db.DanhMucs.Select(d => d.TenDanhMuc).ToList();
+                cbLoai.DataSource = danhMucNames;
             }
         }
 
@@ -646,6 +583,9 @@ namespace LNBT
                 dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
                 dtgvDanhMuc.Columns["SanPhams"].Visible = false;
                 MessageBox.Show("Danh mục đã được xóa thành công.");
+
+                List<string> danhMucNames = db.DanhMucs.Select(d => d.TenDanhMuc).ToList();
+                cbLoai.DataSource = danhMucNames;
             }
         }
 
@@ -673,8 +613,112 @@ namespace LNBT
                 MessageBox.Show("Danh mục đã được cập nhật thành công.");
                 dtgvDanhMuc.DataSource = db.DanhMucs.OrderBy(d => d.Id).ToList();
                 dtgvDanhMuc.Columns["SanPhams"].Visible = false;
+
+                List<string> danhMucNames = db.DanhMucs.Select(d => d.TenDanhMuc).ToList();
+                cbLoai.DataSource = danhMucNames;
             }
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using(Model1 db = new Model1())
+            {
+                List<KhachHang> khachHangs = db.KhachHangs.ToList();
+                dtgvKhachHang.DataSource = khachHangs;
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string tenKhachHang = TbTenKH.Text;
+            string soDienThoai = tbSdt.Text;
+            string email = tbEmail.Text;
+            int diem = Convert.ToInt32(diemTichLuy.Value);
+            DateTime ngaySinh = dtpNgaySinh.Value;
+
+            if (string.IsNullOrEmpty(tenKhachHang))
+            {
+                MessageBox.Show("Vui lòng nhập tên khách hàng");
+            }
+
+            if (string.IsNullOrEmpty(soDienThoai))
+            {
+                MessageBox.Show("Vui lòng nhập số điện thoại khách hàng");
+            }
+
+            if (string.IsNullOrEmpty(email))
+            {
+                MessageBox.Show("Vui lòng nhập email khách hàng");
+            }
+
+            using (Model1 db = new Model1())
+            {
+                KhachHang khachHang = db.KhachHangs.FirstOrDefault(kh => kh.SoDienThoai == soDienThoai);
+                if (khachHang != null)
+                {
+                    MessageBox.Show("Khách hàng đã tồn tại.");
+                    return;
+                }
+                khachHang = new KhachHang
+                {
+                    TenKhachHang = tenKhachHang,
+                    SoDienThoai = soDienThoai,
+                    Email = email,
+                    DiemTichLuy = diem,
+                    NgaySinh = ngaySinh
+                };
+
+                db.KhachHangs.Add(khachHang);
+                db.SaveChanges();
+                MessageBox.Show("Thêm khách hàng thành công.");
+                List<KhachHang> khachHangs = db.KhachHangs.ToList();
+                dtgvKhachHang.DataSource = khachHangs;
+            }
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            using (Model1 db = new Model1())
+            {
+                foreach (DataGridViewRow row in dtgvKhachHang.SelectedRows)
+                {
+                    int maKhachHang = Convert.ToInt32(row.Cells[0].Value);
+                    KhachHang khachHang = db.KhachHangs.FirstOrDefault(kh => kh.MaKhachHang == maKhachHang);
+                    if (khachHang != null)
+                    {
+                        db.KhachHangs.Remove(khachHang);
+                    }
+                }
+                db.SaveChanges();
+                MessageBox.Show("Xóa khách hàng thành công.");
+                List<KhachHang> khachHangs = db.KhachHangs.ToList();
+                dtgvKhachHang.DataSource = khachHangs;
+            }
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            using (Model1 db = new Model1())
+            {
+                foreach (DataGridViewRow row in dtgvKhachHang.SelectedRows)
+                {
+                    int maKhachHang = Convert.ToInt32(row.Cells[0].Value);
+                    KhachHang khachHang = db.KhachHangs.FirstOrDefault(kh => kh.MaKhachHang == maKhachHang);
+                    if (khachHang != null)
+                    {
+                        khachHang.TenKhachHang = row.Cells[1].Value.ToString();
+                        khachHang.SoDienThoai = row.Cells[2].Value.ToString();
+                        khachHang.Email = row.Cells[3].Value.ToString();
+                        khachHang.DiemTichLuy = Convert.ToInt32(row.Cells[4].Value);
+                        khachHang.NgaySinh = Convert.ToDateTime(row.Cells[5].Value);
+                    }
+                }
+                db.SaveChanges();
+                MessageBox.Show("Cập nhật khách hàng thành công.");
+                List<KhachHang> khachHangs = db.KhachHangs.ToList();
+                dtgvKhachHang.DataSource = khachHangs;
+            }
         }
     }
 }
