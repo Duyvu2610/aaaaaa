@@ -198,6 +198,7 @@ namespace LNBT
             dtgvDoUong.RowHeadersWidth = 51;
             dtgvDoUong.Size = new System.Drawing.Size(541, 448);
             dtgvDoUong.TabIndex = 0;
+            dtgvDoUong.AutoGenerateColumns = false;
             // 
             // MaSanPham
             // 
